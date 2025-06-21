@@ -1,6 +1,7 @@
 # SimpleSwap
-Implementation of a UniswapV2 style contract as assignment for the ETH-KIPU MODULE 3. The contract is written in Solidity ^0.8.27 and uses OpenZeppelin libraries.
-ERC20 - safeERC20 - IERC20 - MATH 
+Implementation of a UniswapV2 style contract as assignment for the 2025-EDP-TTPM-MODULE 3. 
+
+The contract is written in Solidity ^0.8.27 and uses OpenZeppelin libraries. ERC20 - safeERC20 - IERC20 - MATH 
 
 ## 📜 Description
 
@@ -41,15 +42,14 @@ This implementation follows the `SwapVerifier.sol` as the technical source of tr
 ## 🚀 Getting Started
 
 ### Prerequisites
-
 -   [Node.js](https://nodejs.org/en/)
--   [Foundry](https://getfoundry.sh/) or [Hardhat](https://hardhat.org/)
+-   [Hardhat](https://hardhat.org/)
 
 ### Installation & Deployment
 
 1.  **Clone the repository:**
     ```sh
-    git clone [https://github.com/jecdesarrollos/your-new-repo-name.git](https://github.com/jecdesarrollos/your-new-repo-name.git)
+    git clone [https://github.com/jecdesarrollos/SimpleSwap.git](https://github.com/jecdesarrollos/SimpleSwap.git)
     cd your-new-repo-name
     ```
 
