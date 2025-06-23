@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-// External Imports 
+// External Imports
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-// Local Imports 
+// Local Imports
 import {ISimpleSwap} from "./ISimpleSwap.sol";
 import {Math} from "./Math.sol";
 
@@ -59,7 +59,8 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
     /// @param initialOwner The address that will become the owner of the contract.
     constructor(address initialOwner)
         Ownable(initialOwner)
-        ERC20("SimpleSwap LPToken", "LPT"){}
+        ERC20("SimpleSwap LPToken", "LPT")
+    {}
 
     /// @notice Special function to receive ETH sent accidentally to the contract.
     receive() external payable {}
@@ -126,12 +127,18 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
         } else {
             uint256 amountBOptimal = (amountADesired * reserve1) / reserve0;
             if (amountBOptimal <= amountBDesired) {
-                require(amountBOptimal >= amountBMin, "SimpleSwap: UNDER_B_MIN");
+                require(
+                    amountBOptimal >= amountBMin,
+                    "SimpleSwap: UNDER_B_MIN"
+                );
                 amountA = amountADesired;
                 amountB = amountBOptimal;
             } else {
                 uint256 amountAOptimal = (amountBDesired * reserve0) / reserve1;
-                require(amountAOptimal >= amountAMin, "SimpleSwap: UNDER_A_MIN");
+                require(
+                    amountAOptimal >= amountAMin,
+                    "SimpleSwap: UNDER_A_MIN"
+                );
                 amountA = amountAOptimal;
                 amountB = amountBDesired;
             }
@@ -150,7 +157,7 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
             uint256 liquidity1 = (amountB * totalLiquiditySupply) / reserve1;
             liquidity = liquidity0 < liquidity1 ? liquidity0 : liquidity1;
         }
-        
+
         if (tokenA == _token0) {
             pair.reserveA += amountA;
             pair.reserveB += amountB;
@@ -185,19 +192,26 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
         require(block.timestamp <= deadline, "SimpleSwap: EXPIRED");
         (address _token0, address _token1) = _sortTokens(tokenA, tokenB);
         PairReserves storage pair = reserves[_token0][_token1];
-        
+
         uint256 totalLiquiditySupply = totalSupply();
         uint256 balance = balanceOf(msg.sender);
-        require(liquidity > 0 && liquidity <= balance, "SimpleSwap: INVALID_LIQUIDITY");
+        require(
+            liquidity > 0 && liquidity <= balance,
+            "SimpleSwap: INVALID_LIQUIDITY"
+        );
 
-        amountA = (liquidity * (tokenA == _token0 ? pair.reserveA : pair.reserveB)) / totalLiquiditySupply;
-        amountB = (liquidity * (tokenB == _token0 ? pair.reserveB : pair.reserveA)) / totalLiquiditySupply;
+        amountA =
+            (liquidity * (tokenA == _token0 ? pair.reserveA : pair.reserveB)) /
+            totalLiquiditySupply;
+        amountB =
+            (liquidity * (tokenB == _token0 ? pair.reserveB : pair.reserveA)) /
+            totalLiquiditySupply;
 
         require(amountA >= amountAMin, "SimpleSwap: UNDER_A_MIN");
         require(amountB >= amountBMin, "SimpleSwap: UNDER_B_MIN");
 
         _burn(msg.sender, liquidity);
-        
+
         if (tokenA == _token0) {
             pair.reserveA -= amountA;
             pair.reserveB -= amountB;
@@ -228,11 +242,11 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
     ) external override {
         require(block.timestamp <= deadline, "SimpleSwap: EXPIRED");
         require(path.length == 2, "SimpleSwap: INVALID_PATH");
-        
+
         address tokenIn = path[0];
         address tokenOut = path[1];
-        (address _token0, ) = _sortTokens(tokenIn, tokenOut);
-        PairReserves storage pair = reserves[_token0][tokenOut];
+        (address _token0, address _token1) = _sortTokens(tokenIn, tokenOut);
+        PairReserves storage pair = reserves[_token0][_token1];
 
         uint256 reserveIn;
         uint256 reserveOut;
@@ -273,7 +287,10 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
         uint256 reserveOut
     ) public pure override returns (uint256 amountOut) {
         require(amountIn > 0, "SimpleSwap: ZERO_INPUT");
-        require(reserveIn > 0 && reserveOut > 0, "SimpleSwap: INSUFFICIENT_LIQUIDITY");
+        require(
+            reserveIn > 0 && reserveOut > 0,
+            "SimpleSwap: INSUFFICIENT_LIQUIDITY"
+        );
 
         uint256 amountInWithFee = amountIn * 997;
         uint256 numerator = amountInWithFee * reserveOut;
@@ -297,7 +314,7 @@ contract SimpleSwap is Ownable, ISimpleSwap, ERC20 {
         uint256 reserve0 = pair.reserveA;
         uint256 reserve1 = pair.reserveB;
         require(reserve0 > 0 && reserve1 > 0, "SimpleSwap: NO_LIQUIDITY");
-        
+
         if (tokenA == _token0) {
             price = (reserve1 * 1e18) / reserve0;
         } else {

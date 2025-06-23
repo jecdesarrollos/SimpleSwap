@@ -11,7 +11,7 @@ library Math {
      * The result is truncated, meaning any fractional part is discarded. For example, sqrt(10) will return 3.
      * This implementation is gas-efficient and safe against overflows for uint256 values.
      * @param y The number for which to calculate the square root.
-     * @return z The integer (truncated) square root of `y`.
+     * @return z The integer square root of `y`.
      */
     function sqrt(uint y) internal pure returns (uint z) {
         if (y > 3) {

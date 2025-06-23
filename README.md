@@ -1,7 +1,7 @@
 # SimpleSwap
 Implementation of a UniswapV2 style contract as assignment for the 2025-EDP-TTPM-MODULE 3. 
 
-The contract is written in Solidity ^0.8.27 and uses OpenZeppelin libraries. ERC20 - safeERC20 - IERC20 - MATH 
+The contract is written in Solidity ^0.8.27 and uses external @OpenZeppelin libraries ERC20 - safeERC20 - IERC20 and Local implementations as MATH and ISimpleSwap.sol
 
 ## 📜 Description
 
@@ -37,7 +37,7 @@ The project contains the following contracts:
 
 The assignment's written specification mentioned that `swapExactTokensForTokens` should return a `uint[] memory amounts`. However, the provided `SwapVerifier.sol` contract expects this function to have **no return value**.
 
-This implementation follows the `SwapVerifier.sol` as the technical source of truth. Therefore, the function signature is `... external;` to ensure compatibility and successful verification.
+This implementation follows the `SwapVerifier.sol` as the technical source. Therefore, the function signature is `... external;` to ensure compatibility and successful verification.
 
 ## 🚀 Getting Started
 
@@ -50,7 +50,7 @@ This implementation follows the `SwapVerifier.sol` as the technical source of tr
 1.  **Clone the repository:**
     ```sh
     git clone [https://github.com/jecdesarrollos/SimpleSwap.git](https://github.com/jecdesarrollos/SimpleSwap.git)
-    cd your-new-repo-name
+    cd SimpleSwap
     ```
 
 2.  **Install dependencies (if using Hardhat):**
