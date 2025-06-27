@@ -43,7 +43,7 @@ function addLiquidity(
     uint256 amountBMin,
     address to,
     uint256 deadline
-) external returns (uint256 amountA, uint256 amountB, uint256 liquidity)
+) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
 
 Parameters:
 
@@ -74,7 +74,7 @@ function removeLiquidity(
     uint256 amountBMin,
     address to,
     uint256 deadline
-) external returns (uint256 amountA, uint256 amountB)
+) external returns (uint256 amountA, uint256 amountB);
 
 Parameters:
 
@@ -101,7 +101,7 @@ function swapExactTokensForTokens(
     address[] calldata path,
     address to,
     uint256 deadline
-) external
+) external;
 
 Parameters:
 
@@ -122,7 +122,7 @@ function getAmountOut(
     uint256 amountIn,
     uint256 reserveIn,
     uint256 reserveOut
-) public pure returns (uint256 amountOut)
+) public pure returns (uint256 amountOut);
 
 Parameters:
 
@@ -135,8 +135,9 @@ Returns:
 amountOut: The calculated amount of output tokens.
 
 Deployed Addresses
+Final deployment addresses on the Sepolia testnet.
 
-Contract 
+Contract
 
 Address
 
@@ -156,7 +157,7 @@ SwapVerifier
 
 0x9f8f02dab384dddf1591c3366069da3fb0018220
 
-tx: 0x77843ee2e4b6cd032b455ea618fe9c7c78c2a6a70213a297a9807786485e05a4
+Successful verification transaction: 0x77843ee2e4b6cd032b455ea618fe9c7c78c2a6a70213a297a9807786485e05a4
 
 Verification Steps
 To successfully verify the SimpleSwap contract, the SwapVerifier must be used on a clean, undeployed state. The following steps must be followed exactly:
@@ -168,26 +169,10 @@ Mint Initial Tokens:
 The end-user account (EOA) must mint a supply of test tokens to itself. For the test, mint at least 1000e18 of both MyTokenA and MyTokenB to your primary account.
 
 Fund the SwapVerifier:
-The SwapVerifier requires its own balance of tokens to run the tests. Transfer the full amount of tokens minted in the previous step from your EOA to the SwapVerifier contract's address.
+The SwapVerifier requires its own balance of tokens to run the tests. Transfer the full amount of tokens minted in the previous step from your EOA to the SwapVerifier's address.
 
 Execute Verification:
-Call the verify function on the SwapVerifier contract with the following parameters:
-
-swapContract: The address of your deployed SimpleSwap contract.
-
-tokenA: The address of MyTokenA.
-
-tokenB: The address of MyTokenB.
-
-amountA: The amount for the liquidity test (e.g., 100e18).
-
-amountB: The amount for the liquidity test (e.g., 100e18).
-
-amountIn: The amount for the swap test (e.g., 10e18).
-
-author: Your full name as a string.
-
-If all steps are followed correctly on a clean state, the transaction will succeed, confirming that the SimpleSwap implementation has passed all checks.
+Call the verify function on the SwapVerifier contract with the required parameters (addresses, amounts, and author name). If all steps are followed correctly on a clean state, the transaction will succeed, confirming that the SimpleSwap implementation has passed all checks.
 
 Author
 Jorge Enrique Cabrera
