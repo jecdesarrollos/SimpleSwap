@@ -1,10 +1,13 @@
-SimpleSwap AMM - Solidity Project
-Description
+**SimpleSwap - Solidity Project**
+
+**Description**
+
 This project is a simplified, Uniswap V2-style Automated Market Maker (AMM) built as a final assignment for a Solidity course. The core SimpleSwap.sol contract allows users to create liquidity pools for ERC20 token pairs, swap tokens, and provide/remove liquidity.
 
-A key architectural feature of this implementation is that SimpleSwap.sol is a self-contained contract. It does not inherit from OpenZeppelin's ERC20 standard. Instead, it natively implements the required ERC20 functionality for its Liquidity Provider (LP) tokens. This design gives the contract the necessary control to interact with the course's SwapVerifier, specifically by allowing the minting of MINIMUM_LIQUIDITY to the zero address (0x0), a critical security and compatibility feature of the Uniswap V2 model.
+A key architectural feature of this implementation is that SimpleSwap.sol is a self-contained contract. It does not inherit from OpenZeppelin's ERC20 standard. Instead, it natively implements the required ERC20 functionality for its Liquidity Provider (LP) tokens. This design gives the contract the necessary control to interact with the course's SwapVerifier.
 
-Core Features
+**Core Features**
+
 ERC20-ERC20 Liquidity Pools: Supports the creation of liquidity pools for any pair of ERC20 tokens.
 
 Native LP Tokens: The contract itself acts as the LP token, tracking providers' shares in the pool.
@@ -17,7 +20,7 @@ Custom Errors: Uses custom errors instead of require strings for optimized gas u
 
 Deadline Protection: All state-changing functions include a deadline parameter to protect users from unfavorable transaction execution due to network delays.
 
-Contracts Overview
+**Contracts Overview**
 SimpleSwap.sol: The core AMM and LP token contract.
 
 MyTokenA.sol & MyTokenB.sol: Simple ERC20 token contracts used for testing. They include a public mint function.
@@ -28,10 +31,12 @@ ISimpleSwap.sol: The interface that the SimpleSwap contract must adhere to.
 
 Math.sol: A library for performing square root calculations, based on the Uniswap V2 implementation.
 
-Functions Interface (API)
+**Functions Interface (API)**
+
 This section details the main functions a front-end or external contract would interact with.
 
-addLiquidity
+**addLiquidity**
+
 Adds liquidity to an ERC20-ERC20 pair.
 
 function addLiquidity(
@@ -45,7 +50,7 @@ function addLiquidity(
     uint256 deadline
 ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
 
-Parameters:
+**Parameters:**
 
 tokenA, tokenB: The addresses of the pair's tokens.
 
@@ -57,13 +62,13 @@ to: The address that will receive the LP tokens.
 
 deadline: A Unix timestamp after which the transaction will revert.
 
-Returns:
+**Returns:**
 
 amountA, amountB: The actual amounts of tokens deposited.
 
 liquidity: The amount of LP tokens minted to the to address.
 
-removeLiquidity
+**removeLiquidity**
 Removes liquidity from a pair by burning LP tokens.
 
 function removeLiquidity(
@@ -76,7 +81,7 @@ function removeLiquidity(
     uint256 deadline
 ) external returns (uint256 amountA, uint256 amountB);
 
-Parameters:
+**Parameters:**
 
 tokenA, tokenB: The addresses of the pair's tokens.
 
@@ -88,11 +93,12 @@ to: The address that will receive the withdrawn tokens.
 
 deadline: A Unix timestamp after which the transaction will revert.
 
-Returns:
+**Returns:**
 
 amountA, amountB: The actual amounts of tokens withdrawn.
 
-swapExactTokensForTokens
+**swapExactTokensForTokens**
+
 Swaps an exact amount of an input token for as many output tokens as possible.
 
 function swapExactTokensForTokens(
@@ -103,7 +109,7 @@ function swapExactTokensForTokens(
     uint256 deadline
 ) external;
 
-Parameters:
+**Parameters:**
 
 amountIn: The exact amount of input tokens to swap.
 
@@ -115,7 +121,8 @@ to: The address that will receive the output tokens.
 
 deadline: A Unix timestamp after which the transaction will revert.
 
-getAmountOut (View)
+**getAmountOut (View)**
+
 Calculates the amount of output tokens received for a given input amount.
 
 function getAmountOut(
@@ -124,46 +131,22 @@ function getAmountOut(
     uint256 reserveOut
 ) public pure returns (uint256 amountOut);
 
-Parameters:
+**Parameters:**
 
 amountIn: The amount of input tokens.
 
 reserveIn, reserveOut: The current reserves of the input and output tokens in the pair.
 
-Returns:
+**Returns:**
 
 amountOut: The calculated amount of output tokens.
 
-Deployed Addresses
-Final deployment addresses on the Sepolia testnet.
+**Verification Steps**
 
-Contract
-
-Address
-
-SimpleSwap
-
-0xB6F592571fc0bf98443812e2906933D1cBCA9b03
-
-MyTokenA
-
-0xcadc59c17bca1b52bfe93a33c945575fefe585bd
-
-MyTokenB
-
-0xda4631dd3f48d9c059ba30f77159cd921177ffc6
-
-SwapVerifier
-
-0x9f8f02dab384dddf1591c3366069da3fb0018220
-
-Successful verification transaction: 0x77843ee2e4b6cd032b455ea618fe9c7c78c2a6a70213a297a9807786485e05a4
-
-Verification Steps
 To successfully verify the SimpleSwap contract, the SwapVerifier must be used on a clean, undeployed state. The following steps must be followed exactly:
 
 Deploy Contracts:
-Deploy all four contracts (MyTokenA, MyTokenB, SwapVerifier, SimpleSwap) to a fresh network environment (e.g., after reloading the Remix VM). The SimpleSwap contract must not be interacted with after deployment.
+Deploy all four contracts (MyTokenA, MyTokenB, SwapVerifier, SimpleSwap) to a fresh network environment (e.g., after reloading the Remix VM). 
 
 Mint Initial Tokens:
 The end-user account (EOA) must mint a supply of test tokens to itself. For the test, mint at least 1000e18 of both MyTokenA and MyTokenB to your primary account.
@@ -174,5 +157,19 @@ The SwapVerifier requires its own balance of tokens to run the tests. Transfer t
 Execute Verification:
 Call the verify function on the SwapVerifier contract with the required parameters (addresses, amounts, and author name). If all steps are followed correctly on a clean state, the transaction will succeed, confirming that the SimpleSwap implementation has passed all checks.
 
-Author
-Jorge Enrique Cabrera
+**Deployed Addresses**
+
+Final deployment addresses on the Sepolia testnet.
+
+Contract Address SimpleSwap 0xB6F592571fc0bf98443812e2906933D1cBCA9b03
+
+MyTokenA 0xcadc59c17bca1b52bfe93a33c945575fefe585bd
+
+MyTokenB 0xda4631dd3f48d9c059ba30f77159cd921177ffc6
+
+SwapVerifier 0x9f8f02dab384dddf1591c3366069da3fb0018220
+
+Successful verification transaction: 0x77843ee2e4b6cd032b455ea618fe9c7c78c2a6a70213a297a9807786485e05a4
+
+**Author
+Jorge Enrique Cabrera**
