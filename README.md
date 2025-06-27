@@ -1,74 +1,193 @@
-# SimpleSwap
-Implementation of a UniswapV2 style contract as assignment for the 2025-EDP-TTPM-MODULE 3. 
+SimpleSwap AMM - Solidity Project
+Description
+This project is a simplified, Uniswap V2-style Automated Market Maker (AMM) built as a final assignment for a Solidity course. The core SimpleSwap.sol contract allows users to create liquidity pools for ERC20 token pairs, swap tokens, and provide/remove liquidity.
 
-The contract is written in Solidity ^0.8.27 and uses external @OpenZeppelin libraries ERC20 - safeERC20 - IERC20 and Local implementations as MATH and ISimpleSwap.sol
+A key architectural feature of this implementation is that SimpleSwap.sol is a self-contained contract. It does not inherit from OpenZeppelin's ERC20 standard. Instead, it natively implements the required ERC20 functionality for its Liquidity Provider (LP) tokens. This design gives the contract the necessary control to interact with the course's SwapVerifier, specifically by allowing the minting of MINIMUM_LIQUIDITY to the zero address (0x0), a critical security and compatibility feature of the Uniswap V2 model.
 
-## 📜 Description
+Core Features
+ERC20-ERC20 Liquidity Pools: Supports the creation of liquidity pools for any pair of ERC20 tokens.
 
-`SimpleSwap.sol` is a smart contract that allows users to perform three main actions on a pair of ERC20 tokens:
-1.  **Add Liquidity:** User can deposit a pair of tokens to become Liquidity Provider (LP).
-2.  **Remove Liquidity:** LP can withdraw his share of the tokens from the pool.
-3.  **Swap Tokens:** Users can trade one token for the other.
+Native LP Tokens: The contract itself acts as the LP token, tracking providers' shares in the pool.
 
-A key feature of this implementation is that the `SimpleSwap` contract itself functions as a real, transferable **ERC20 LP Token**, representing a provider's share in the liquidity pool.
+MINIMUM_LIQUIDITY Protection: Implements the standard protection mechanism by minting a small, permanent amount of liquidity to the zero address upon pool creation to increase the cost of initial price manipulation.
 
-## ✨ Key Features
+Fee-less Swaps: Swaps are calculated using the pure constant product formula (x * y = k) without any additional protocol fees, as per the assignment requirements.
 
--   **ERC20 - ERC20 Liquidity Pools:** Create liquidity pools for any pair of ERC20 tokens.
--   **ERC20 LP Token:** Mints a standard and transferable ERC20 token ("SLP") to liquidity providers.
--   **Proportional Liquidity Logic:** Uses sqrt(x*y) for initial liquidity calculation.
--   **0.3% Trading Fee:** A 0.3% fee is applied to every swap, which is accrued by the liquidity providers.
--   **Slippage Protection:** All liquidity and swap functions include minimum amount parameters to protect users from price volatility.
--   **Deadline Protection:** All transactions have a 'deadline' parameter.
--   **Emergency Fund Recovery:** Includes owneronly functions just in case.
+Custom Errors: Uses custom errors instead of require strings for optimized gas usage and modern Solidity best practices.
 
-## 📁 Contracts
+Deadline Protection: All state-changing functions include a deadline parameter to protect users from unfavorable transaction execution due to network delays.
 
-The project contains the following contracts:
+Contracts Overview
+SimpleSwap.sol: The core AMM and LP token contract.
 
--   `SimpleSwap.sol`: The core AMM pair contract. It inherits from OpenZeppelin's `ERC20` and `Ownable`.
--   `MyTokenA.sol` and `MyTokenB.sol`: ERC20 tokens used for testing and deployment.
--   `Math.sol`: A direct copy of the `Math` library from Uniswap V2, used for its gas-efficient square root function.
--   `SwapVerifier.sol`: The verifier contract provided by the course instructor to test the functionality.
+MyTokenA.sol & MyTokenB.sol: Simple ERC20 token contracts used for testing. They include a public mint function.
 
-## 📝 Implementation Notes
+SwapVerifier.sol: The instructor-provided contract used to run a series of automated checks against the SimpleSwap implementation.
 
-### `swapExactTokensForTokens` Return Value
+ISimpleSwap.sol: The interface that the SimpleSwap contract must adhere to.
 
-The assignment's written specification mentioned that `swapExactTokensForTokens` should return a `uint[] memory amounts`. However, the provided `SwapVerifier.sol` contract expects this function to have **no return value**.
+Math.sol: A library for performing square root calculations, based on the Uniswap V2 implementation.
 
-This implementation follows the `SwapVerifier.sol` as the technical source. Therefore, the function signature is `... external;` to ensure compatibility and successful verification.
+Functions Interface (API)
+This section details the main functions a front-end or external contract would interact with.
 
-## 🚀 Getting Started
+addLiquidity
+Adds liquidity to an ERC20-ERC20 pair.
 
-### Prerequisites
--   [Node.js](https://nodejs.org/en/)
--   [Hardhat](https://hardhat.org/)
+function addLiquidity(
+    address tokenA,
+    address tokenB,
+    uint256 amountADesired,
+    uint256 amountBDesired,
+    uint256 amountAMin,
+    uint256 amountBMin,
+    address to,
+    uint256 deadline
+) external returns (uint256 amountA, uint256 amountB, uint256 liquidity)
 
-### Installation & Deployment
+Parameters:
 
-1.  **Clone the repository:**
-    ```sh
-    git clone [https://github.com/jecdesarrollos/SimpleSwap.git](https://github.com/jecdesarrollos/SimpleSwap.git)
-    cd SimpleSwap
-    ```
+tokenA, tokenB: The addresses of the pair's tokens.
 
-2.  **Install dependencies (if using Hardhat):**
-    ```sh
-    npm install
-    ```
+amountADesired, amountBDesired: The amount of each token the user wishes to deposit.
 
-3.  **Set up environment variables:**
-    Create a `.env` file and add your `SEPOLIA_RPC_URL` and `PRIVATE_KEY`.
+amountAMin, amountBMin: The minimum amounts to deposit, providing slippage protection.
 
-4.  **Deploy the contracts:**
-    ```sh
-    # Example using Hardhat
-    npx hardhat run scripts/deploy.js --network sepolia
-    ```
+to: The address that will receive the LP tokens.
 
-## ✍️ Author
+deadline: A Unix timestamp after which the transaction will revert.
 
-**Jorge Enrique Cabrera - 2025-EDP-TTPM-M3**
+Returns:
 
--   GitHub: [@jecdesarrollos](https://github.com/jecdesarrollos)
+amountA, amountB: The actual amounts of tokens deposited.
+
+liquidity: The amount of LP tokens minted to the to address.
+
+removeLiquidity
+Removes liquidity from a pair by burning LP tokens.
+
+function removeLiquidity(
+    address tokenA,
+    address tokenB,
+    uint256 liquidity,
+    uint256 amountAMin,
+    uint256 amountBMin,
+    address to,
+    uint256 deadline
+) external returns (uint256 amountA, uint256 amountB)
+
+Parameters:
+
+tokenA, tokenB: The addresses of the pair's tokens.
+
+liquidity: The amount of LP tokens to burn.
+
+amountAMin, amountBMin: The minimum amounts of underlying tokens to receive.
+
+to: The address that will receive the withdrawn tokens.
+
+deadline: A Unix timestamp after which the transaction will revert.
+
+Returns:
+
+amountA, amountB: The actual amounts of tokens withdrawn.
+
+swapExactTokensForTokens
+Swaps an exact amount of an input token for as many output tokens as possible.
+
+function swapExactTokensForTokens(
+    uint256 amountIn,
+    uint256 amountOutMin,
+    address[] calldata path,
+    address to,
+    uint256 deadline
+) external
+
+Parameters:
+
+amountIn: The exact amount of input tokens to swap.
+
+amountOutMin: The minimum amount of output tokens the user will accept.
+
+path: An array of two token addresses: [inputToken, outputToken].
+
+to: The address that will receive the output tokens.
+
+deadline: A Unix timestamp after which the transaction will revert.
+
+getAmountOut (View)
+Calculates the amount of output tokens received for a given input amount.
+
+function getAmountOut(
+    uint256 amountIn,
+    uint256 reserveIn,
+    uint256 reserveOut
+) public pure returns (uint256 amountOut)
+
+Parameters:
+
+amountIn: The amount of input tokens.
+
+reserveIn, reserveOut: The current reserves of the input and output tokens in the pair.
+
+Returns:
+
+amountOut: The calculated amount of output tokens.
+
+Deployed Addresses
+
+Contract 
+
+Address
+
+SimpleSwap
+
+0xB6F592571fc0bf98443812e2906933D1cBCA9b03
+
+MyTokenA
+
+0xcadc59c17bca1b52bfe93a33c945575fefe585bd
+
+MyTokenB
+
+0xda4631dd3f48d9c059ba30f77159cd921177ffc6
+
+SwapVerifier
+
+0x9f8f02dab384dddf1591c3366069da3fb0018220
+
+tx: 0x77843ee2e4b6cd032b455ea618fe9c7c78c2a6a70213a297a9807786485e05a4
+
+Verification Steps
+To successfully verify the SimpleSwap contract, the SwapVerifier must be used on a clean, undeployed state. The following steps must be followed exactly:
+
+Deploy Contracts:
+Deploy all four contracts (MyTokenA, MyTokenB, SwapVerifier, SimpleSwap) to a fresh network environment (e.g., after reloading the Remix VM). The SimpleSwap contract must not be interacted with after deployment.
+
+Mint Initial Tokens:
+The end-user account (EOA) must mint a supply of test tokens to itself. For the test, mint at least 1000e18 of both MyTokenA and MyTokenB to your primary account.
+
+Fund the SwapVerifier:
+The SwapVerifier requires its own balance of tokens to run the tests. Transfer the full amount of tokens minted in the previous step from your EOA to the SwapVerifier contract's address.
+
+Execute Verification:
+Call the verify function on the SwapVerifier contract with the following parameters:
+
+swapContract: The address of your deployed SimpleSwap contract.
+
+tokenA: The address of MyTokenA.
+
+tokenB: The address of MyTokenB.
+
+amountA: The amount for the liquidity test (e.g., 100e18).
+
+amountB: The amount for the liquidity test (e.g., 100e18).
+
+amountIn: The amount for the swap test (e.g., 10e18).
+
+author: Your full name as a string.
+
+If all steps are followed correctly on a clean state, the transaction will succeed, confirming that the SimpleSwap implementation has passed all checks.
+
+Author
+Jorge Enrique Cabrera
