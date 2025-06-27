@@ -21,15 +21,22 @@ Custom Errors: Uses custom errors instead of require strings for optimized gas u
 Deadline Protection: All state-changing functions include a deadline parameter to protect users from unfavorable transaction execution due to network delays.
 
 **Contracts Overview**
-SimpleSwap.sol: The core AMM and LP token contract.
 
-MyTokenA.sol & MyTokenB.sol: Simple ERC20 token contracts used for testing. They include a public mint function.
+**SimpleSwap.sol:** The core AMM and LP token contract.
 
-SwapVerifier.sol: The instructor-provided contract used to run a series of automated checks against the SimpleSwap implementation.
+**SimpleSwap_flattened.sol:** Flattened source used for deployment and verification
 
-ISimpleSwap.sol: The interface that the SimpleSwap contract must adhere to.
+**MyTokenA.sol & MyTokenB.sol:** Simple ERC20 token contracts used for testing. They include a public mint function.
 
-Math.sol: A library for performing square root calculations, based on the Uniswap V2 implementation.
+**SwapVerifier.sol:** The instructor-provided contract used to run a series of automated checks against the SimpleSwap implementation.
+
+**ISimpleSwap.sol:** The interface that the SimpleSwap contract must adhere to.
+
+**Math.sol:** A library for performing square root calculations, based on the Uniswap V2 implementation.
+
+**standard-json-input.json:** Contains the full compiler configuration and input details used for contract verification on Sepolia via Etherscan's Standard JSON Input.
+
+**compiler_config.json:** Stores the Solidity compiler version and optimization settings used during contract compilation.
 
 **Functions Interface (API)**
 
